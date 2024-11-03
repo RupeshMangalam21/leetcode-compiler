@@ -1,10 +1,10 @@
-﻿version: '3.8'
-
-services:
+﻿services:
   api:
     build: .
+    environment:
+      - PYTHONPATH=/app/src
     ports:
-      - "8000:8000"
+      - "5002:7000"
     env_file:
       - .env
     depends_on:

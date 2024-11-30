@@ -1,0 +1,21 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy the application files
+COPY . /app
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Docker CLI
+RUN apt-get update && apt-get install -y \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add the user to the Docker group if it exists
+RUN if ! getent group docker > /dev/null; then groupadd -g 999 docker; fi && \
+    usermod -aG docker root
+
+# Run the worker script
+CMD ["python", "-u", "src/api/worker.py"]

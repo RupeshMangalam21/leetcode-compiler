@@ -11,27 +11,40 @@ def execute_code(code: str, language: str) -> dict:
     }
 
     if language not in file_map:
-        return {"error": f"Unsupported language: {language}"}
+        return {"status": "failure", "error": f"Unsupported language: {language}"}
 
-    # Generate a unique filename for the code to avoid conflicts
     unique_id = str(uuid.uuid4())
     filename, docker_dir = file_map[language]
     unique_filename = f"{unique_id}_{filename}"
+    output = ""
 
-    # Write code to file
-    with open(unique_filename, "w") as f:
-        f.write(code)
-
-    # Build and run the Docker container
+    # Create the temporary file
     try:
-        subprocess.run(f"docker build -t {language}_executor {docker_dir}", shell=True, check=True)
-        result = subprocess.run(f"docker run --rm -v {os.path.abspath(os.getcwd())}:/app {language}_executor {unique_filename}", shell=True, capture_output=True, text=True)
-        output = result.stdout if result.returncode == 0 else result.stderr
+        with open(unique_filename, "w") as f:
+            f.write(code)
+
+        # Run the Docker container
+        print(f"Running Docker container for {language} code execution...")
+        result = subprocess.run(
+            f"docker run --rm -v {os.path.abspath(os.getcwd())}:/app {language}_executor {unique_filename}",
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+
+        # Capture the output
+        if result.returncode == 0:
+            output = result.stdout
+            status = "success"
+        else:
+            output = f"Error: {result.stderr}"
+            status = "failure"
+
     except subprocess.CalledProcessError as e:
-        return {"error": f"Error during Docker execution: {str(e)}"}
+        return {"status": "failure", "error": f"Docker execution error: {str(e)}"}
     finally:
-        # Cleanup the generated file
+        # Cleanup temporary file
         if os.path.exists(unique_filename):
             os.remove(unique_filename)
 
-    return {"output": output or "No output"}
+    return {"status": status, "output": output or "No output"}

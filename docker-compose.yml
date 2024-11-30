@@ -1,15 +1,17 @@
 ﻿services:
   api:
+    env_file:
+      - .env
     build: .
     environment:
       - PYTHONPATH=/app/src
+      - DATABASE_URL=postgresql://user:password@db:5432/leetcode_compiler
     ports:
       - "5002:7000"
-    env_file:
-      - .env
     depends_on:
       - db
       - redis
+    command: python -m src.api.main 
 
   db:
     image: postgres:13
@@ -21,9 +23,22 @@
       - db_data:/var/lib/postgresql/data
 
   redis:
-    image: redis:6
+    image: redis:6.2
     ports:
       - "6379:6379"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - PYTHONPATH=/app/src
+    command: python -u src/api/worker.py
+    depends_on:
+      - redis
+      - api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   db_data:

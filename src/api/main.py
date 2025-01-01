@@ -8,7 +8,7 @@ from redis import Redis
 
 app = Flask(__name__)
 
-# Redis connection (using service name 'redis' instead of IP)
+# Redis connection
 r = Redis(host='redis', port=6379)
 q = Queue(connection=r)
 
@@ -20,7 +20,7 @@ def home():
 def health_check():
     return jsonify({"status": "ok"}), 200
 
-@app.route('/execute', methods=['POST'])
+@app.route('/api/execute', methods=['POST'])
 def execute_code_endpoint():
     data = request.get_json()
     code = data.get("code")
@@ -57,4 +57,4 @@ def get_job_status(job_id):
         return jsonify({"status": "failure", "error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7000)
+    app.run(host='0.0.0.0', port=7000, debug=True)

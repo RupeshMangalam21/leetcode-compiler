@@ -1,16 +1,11 @@
-FROM python:3.12
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the entire project into the container
-COPY . .
-
-# Set the PYTHONPATH to the /app/src directory
-ENV PYTHONPATH=/app/src
-
-# Install required dependencies (if any)
-RUN pip install -r requirements.txt
-
-# Run the script
-CMD ["python3", "src/api/script.py"]
+# For python/Dockerfile:
+    FROM python:3.9-slim
+    WORKDIR /leetcode_compiler
+    RUN adduser --disabled-password --gecos '' executor && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends \
+        python3-pip \
+        && rm -rf /var/lib/apt/lists/*
+    USER executor
+    CMD ["python3"]
+    

@@ -1,9 +1,23 @@
 FROM gcc:latest
 
-WORKDIR /app
+# Set the working directory
+WORKDIR /leetcode_compiler
 
-COPY script.cpp .
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN g++ script.cpp -o script
+# Add a non-root user named "executor"
+RUN useradd -ms /bin/bash executor
 
-CMD ["./script"]
+# Switch to the "executor" user
+USER executor
+
+# Add the script to compile and run code
+COPY --chown=executor:executor docker/cpp/compile_and_run.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/compile_and_run.sh
+
+# Set the default command to execute the script
+CMD ["/usr/local/bin/compile_and_run.sh"]

@@ -1,21 +1,28 @@
 FROM python:3.10-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the application files
+# Copy the application files into the container
 COPY . /app
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip setuptools && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Install Docker CLI
 RUN apt-get update && apt-get install -y \
     docker.io \
-    && rm -rf /var/lib/apt/lists/*
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Add the user to the Docker group if it exists
+# Ensure the Docker group exists and add the root user to it
 RUN if ! getent group docker > /dev/null; then groupadd -g 999 docker; fi && \
     usermod -aG docker root
+
+# Expose the default Redis port (optional, for debugging or worker connection monitoring)
+EXPOSE 6379
 
 # Run the worker script
 CMD ["python", "-u", "src/api/worker.py"]

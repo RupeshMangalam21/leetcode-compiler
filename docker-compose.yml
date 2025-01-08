@@ -1,4 +1,6 @@
-﻿services:
+﻿version: '3.8'
+
+services:
   api:
     env_file:
       - .env
@@ -39,6 +41,37 @@
       - api
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  cpp:
+    build:
+      context: ./docker/cpp
+      dockerfile: Dockerfile
+    command: tail -f /dev/null
+    depends_on:
+      - api
+
+  java:
+    build:
+      context: ./docker/java
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+
+  node:
+    build:
+      context: ./docker/nodejs
+      dockerfile: Dockerfile
+    command: tail -f /dev/null
+    depends_on:
+      - api
+
+  python:
+    build:
+      context: ./docker/python
+      dockerfile: Dockerfile
+    command: tail -f /dev/null
+    depends_on:
+      - api
 
 volumes:
   db_data:

@@ -16,7 +16,7 @@ RUN useradd -ms /bin/bash executor
 USER executor
 
 # Add the script to compile and run code
-COPY --chown=executor:executor docker/cpp/compile_and_run.sh /usr/local/bin/
+COPY --chown=executor:executor compile_and_run.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/compile_and_run.sh
 
 # Set the default command to execute the script

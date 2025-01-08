@@ -4,3 +4,4 @@ grant {
     permission java.lang.RuntimePermission "writeFileDescriptor";
     permission java.util.PropertyPermission "*", "read";
 };
+

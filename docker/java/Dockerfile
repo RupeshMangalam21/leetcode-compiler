@@ -1,23 +1,25 @@
-FROM openjdk:latest
+FROM openjdk:17-jdk-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Add a non-root user named "executor"
-RUN useradd -ms /bin/bash executor
+RUN useradd -ms /bin/bash executor && \
+    mkdir -p /app && \
+    chown executor:executor /app
 
-# Ensure the /app directory is writable by the executor user
-RUN mkdir -p /app && chown executor:executor /app
+# Install additional tools if needed
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    bash && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy necessary files and assign correct ownership
+# Copy necessary files
 COPY --chown=executor:executor docker/java/compile_and_run.sh /usr/local/bin/
 COPY --chown=executor:executor docker/java/java.policy /app/
 
-# Make the script executable
 RUN chmod +x /usr/local/bin/compile_and_run.sh
 
-# Switch to the non-root user
 USER executor
 
-# Set the default command to run the script
-ENTRYPOINT ["/usr/local/bin/compile_and_run.sh"]
+# Set the default command to keep the container running
+CMD ["tail", "-f", "/dev/null"]

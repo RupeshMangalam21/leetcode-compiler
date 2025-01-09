@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import sys
 sys.path.append('/app/src')
-from api.execution import execute_code
+from api.execution import main
 from db.models import SessionLocal, User
 from rq import Queue
 from redis import Redis
@@ -37,7 +37,7 @@ def execute_code_endpoint():
         return jsonify({"status": "failure", "error": str(e)}), 500
 
 def enqueue_code_execution(language, code):
-    job = q.enqueue(execute_code, code, language)
+    job = q.enqueue(main, code, language)
     return job.get_id()
 
 @app.route('/job_status/<job_id>', methods=['GET'])

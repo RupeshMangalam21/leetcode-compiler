@@ -1,7 +1,6 @@
 import os
 import redis
 from rq import Worker, Queue, Connection
-from api.execution import execute_code
 
 # Redis connection settings
 redis_url = os.getenv('REDIS_URL', 'redis://redis:6379/0')

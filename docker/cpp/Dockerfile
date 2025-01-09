@@ -16,8 +16,8 @@ RUN useradd -ms /bin/bash executor
 USER executor
 
 # Add the script to compile and run code
-COPY --chown=executor:executor compile_and_run.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/compile_and_run.sh
+COPY --chown=executor:executor compile_and_run.sh /bin/
+RUN chmod +x /bin/compile_and_run.sh
 
 # Set the default command to execute the script
-CMD ["/usr/local/bin/compile_and_run.sh"]
+CMD ["/bin/compile_and_run.sh"]

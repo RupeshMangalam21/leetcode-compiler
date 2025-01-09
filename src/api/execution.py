@@ -32,7 +32,7 @@ class CodeExecutionService:
 
         try:
             # Copy required files for Java execution
-            script_path = Path("/usr/local/bin/compile_and_run.sh")
+            script_path = Path("/bin/compile_and_run.sh")
             policy_path = Path("/app/java.policy")
             
             # Debugging: Check if the files exist before copying
@@ -155,6 +155,6 @@ class CodeExecutionService:
 
 executor_service = CodeExecutionService()
 
-def execute_code(code: str, language: str) -> Dict[str, Any]:
+def main(code: str, language: str) -> Dict[str, Any]:
     """Main execution interface"""
     return executor_service.execute_code(code, language)

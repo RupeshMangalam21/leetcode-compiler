@@ -14,10 +14,14 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Copy necessary files
-COPY --chown=executor:executor docker/java/compile_and_run.sh /usr/local/bin/
-COPY --chown=executor:executor docker/java/java.policy /app/
+COPY --chown=executor:executor compile_and_run.sh /bin/
+COPY --chown=executor:executor java.policy /app/
 
-RUN chmod +x /usr/local/bin/compile_and_run.sh
+RUN chmod +x /bin/compile_and_run.sh
+
+# Debugging: Verify the presence of the files
+RUN ls -l /bin/
+RUN ls -l /app/
 
 USER executor
 

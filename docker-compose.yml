@@ -54,6 +54,9 @@ services:
     build:
       context: ./docker/java
       dockerfile: Dockerfile
+    volumes:
+    - ./Docker/java:/app  # Make sure this is the correct path
+    command: tail -f /dev/null
     depends_on:
       - api
 
@@ -75,3 +78,7 @@ services:
 
 volumes:
   db_data:
+
+#docker cp ./docker/java/compile_and_run.sh 945da34397fb:/usr/local/bin/
+
+#docker exec -it 945da34397fb ls -l /usr/local/bin/
